@@ -1,4 +1,7 @@
+import sys
+
 from gendiff import generate_diff
+from gendiff.scripts.gendiff import main
 
 
 def test_generate_diff():
@@ -14,3 +17,17 @@ def test_generate_diff():
 }"""
 
     assert result == expected
+
+
+def test_main(monkeypatch, capsys):
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["gendiff", "file1.json", "file2.json"],
+    )
+
+    main()
+
+    captured = capsys.readouterr()
+    assert "host: hexlet.io" in captured.out
+    assert captured.out.startswith("{")
