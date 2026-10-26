@@ -1,38 +1,69 @@
-# Calculadora de diferencias
+# Difference Calculator
 
-[![hexlet-check](https://github.com/MiguelJoya-01/python-project-174/actions/workflows/hexlet-check.yml/badge.svg)](https://github.com/MiguelJoya-01/python-project-174/actions)
+[![Python CI](https://github.com/MiguelJoya-01/python-project-174/actions/workflows/pyci.yml/badge.svg)](https://github.com/MiguelJoya-01/python-project-174/actions/workflows/pyci.yml)
 
-En este proyecto vas a trabajar con colecciones y estructuras en árbol. Aprenderás a leer y generar archivos JSON y YAML, escribirás pruebas con pytest y empezarás a programar usando TDD. Además, conocerás herramientas como la integración continua (CI) y te acercarás a prácticas modernas como la programación extrema (XP).
+A command-line utility and Python library for comparing two configuration files.
 
-Proyecto de aprendizaje de Códica: https://app.codica.la/programs/python
-Así debería funcionar: https://asciinema.org/a/Pe6QypnLEmFWssNAjCOJN1iii
+## Requirements
 
-## Stack
+- Python 3.12 or higher
+- uv
 
-- Python
+## Installation
 
-## Instalación
-
-<!-- Describa la instalación: clonación, dependencias, variables de entorno -->
+Clone the repository and enter the project directory:
 
 ```bash
 git clone https://github.com/MiguelJoya-01/python-project-174.git
 cd python-project-174
 ```
 
-## Uso
+Install the project dependencies:
 
-<!-- Agregue ejemplos de ejecución y una grabación de asciinema: esto es lo que miran los empleadores -->
+```bash
+uv sync
+```
 
----
+## Usage
 
-<details>
-<summary>Pruebas automáticas de Códica</summary>
+Compare two JSON files:
 
-Las pruebas se ejecutan en cada commit. El archivo `.github/workflows/hexlet-check.yml` es el responsable de ejecutarlas: no lo elimine ni lo renombre, y no cambie el nombre del repositorio.
+```bash
+uv run gendiff file1.json file2.json
+```
 
-</details>
+Example output:
 
-## Acerca de Códica
+```text
+{
+  - follow: false
+    host: hexlet.io
+  - proxy: 123.234.53.22
+  - timeout: 50
+  + timeout: 20
+  + verbose: true
+}
+```
 
-[Códica](https://app.codica.la/) es una escuela de programación: programas de aprendizaje propios con práctica, apoyo de mentores y proyectos reales que quedan en su currículum. Este repositorio es uno de esos proyectos.
+You can also use the library from Python:
+
+```python
+from gendiff import generate_diff
+
+diff = generate_diff("file1.json", "file2.json")
+print(diff)
+```
+
+## Features
+
+- Compares JSON configuration files.
+- Displays added, removed, changed, and unchanged keys.
+- Sorts keys alphabetically.
+- Provides a reusable `generate_diff()` function.
+
+## Demo
+
+Watch the command-line utility in action:
+
+[![asciicast](https://asciinema.org/a/NbjN7VAxX8bFp8RV.svg)](https://asciinema.org/a/NbjN7VAxX8bFp8RV)
+
