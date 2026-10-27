@@ -141,3 +141,126 @@ def test_generate_diff_nested_to_scalar(tmp_path):
 }"""
 
     assert result == expected
+
+def test_generate_diff_plain(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"common": {"setting1": "Value 1", "setting2": 200}}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"common": {"setting1": "Value 1", "setting2": 300, "follow": false}}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "plain")
+
+    expected = (
+        "Property 'common.follow' was added with value: false\n"
+        "Property 'common.setting2' was updated. From 200 to 300"
+    )
+
+    assert result == expected
+
+
+def test_generate_diff_plain_nested(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"group1": {"nest": {"key": "value"}}}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"group1": {"nest": "str"}}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "plain")
+
+    expected = (
+        "Property 'group1.nest' was updated. "
+        "From [complex value] to 'str'"
+    )
+
+    assert result == expected
+
+
+def test_generate_diff_plain_complex_value(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"items": 1}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"items": {"nested": true}}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "plain")
+
+    expected = (
+        "Property 'items' was updated. "
+        "From 1 to [complex value]"
+    )
+
+    assert result == expected
+
+def test_generate_diff_plain_removed(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"common": {"setting2": 200}}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"common": {}}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "plain")
+
+    assert result == "Property 'common.setting2' was removed"
+
+
+def test_generate_diff_plain_string_and_null(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"name": "Miguel", "active": true}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"name": "", "active": null}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "plain")
+
+    expected = (
+        "Property 'active' was updated. From true to null\n"
+        "Property 'name' was updated. From 'Miguel' to ''"
+    )
+
+    assert result == expected
+
+
+def test_generate_diff_unsupported_format(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text('{"key": 1}', encoding="utf-8")
+    file2.write_text('{"key": 2}', encoding="utf-8")
+
+    try:
+        generate_diff(str(file1), str(file2), "unsupported")
+    except ValueError as error:
+        assert str(error) == "Unsupported format: unsupported"
+    else:
+        raise AssertionError("Expected ValueError")
