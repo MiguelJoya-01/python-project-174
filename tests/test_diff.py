@@ -264,3 +264,73 @@ def test_generate_diff_unsupported_format(tmp_path):
         assert str(error) == "Unsupported format: unsupported"
     else:
         raise AssertionError("Expected ValueError")
+
+def test_generate_diff_json(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"setting1": "Value 1", "setting2": 200}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"setting1": "Value 1", "setting2": 300, "follow": false}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "json")
+
+    import json
+
+    parsed = json.loads(result)
+
+    assert isinstance(parsed, list)
+    assert parsed == [
+        {"key": "follow", "type": "added", "value": False},
+        {
+            "key": "setting1",
+            "type": "unchanged",
+            "value": "Value 1",
+        },
+        {
+            "key": "setting2",
+            "type": "changed",
+            "old_value": 200,
+            "new_value": 300,
+        },
+    ]
+
+
+def test_generate_diff_json_nested(tmp_path):
+    file1 = tmp_path / "file1.json"
+    file2 = tmp_path / "file2.json"
+
+    file1.write_text(
+        '{"common": {"setting": 1}}',
+        encoding="utf-8",
+    )
+    file2.write_text(
+        '{"common": {"setting": 2}}',
+        encoding="utf-8",
+    )
+
+    result = generate_diff(str(file1), str(file2), "json")
+
+    import json
+
+    parsed = json.loads(result)
+
+    assert parsed == [
+        {
+            "key": "common",
+            "type": "nested",
+            "children": [
+                {
+                    "key": "setting",
+                    "type": "changed",
+                    "old_value": 1,
+                    "new_value": 2,
+                }
+            ],
+        }
+    ]

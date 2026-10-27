@@ -42,21 +42,15 @@ The utility also supports files with the `.yaml` extension.
 
 ### Output formats
 
-The default output format is `stylish`. You can specify it explicitly using `--format`:
-
-```bash
-uv run gendiff --format stylish file1.json file2.json
-```
-
-Gendiff also supports the `plain` output format:
-
-```bash
-uv run gendiff --format plain file1.json file2.json
-```
+Gendiff supports three output formats: `stylish`, `plain`, and `json`. The default format is `stylish`.
 
 #### Stylish format
 
 The `stylish` format displays differences in a structured, tree-like format. Added and removed properties are marked with `+` and `-`, respectively.
+
+```bash
+uv run gendiff --format stylish file1.json file2.json
+```
 
 Example:
 
@@ -74,6 +68,10 @@ Example:
 #### Plain format
 
 The `plain` format describes changes using sentences and full property paths.
+
+```bash
+uv run gendiff --format plain file1.json file2.json
+```
 
 Example:
 
@@ -93,12 +91,43 @@ The plain formatter follows these rules:
 - Strings are enclosed in single quotes.
 - Boolean and null values are displayed as `true`, `false`, and `null`.
 
+#### JSON format
+
+The `json` format outputs the difference tree as a JSON array. Each node includes its property name, change type, and relevant values. Nested objects retain their recursive structure.
+
+```bash
+uv run gendiff --format json file1.json file2.json
+```
+
+Example:
+
+```json
+[
+  {
+    "key": "follow",
+    "type": "added",
+    "value": false
+  },
+  {
+    "key": "setting1",
+    "type": "unchanged",
+    "value": "Value 1"
+  },
+  {
+    "key": "setting2",
+    "type": "changed",
+    "old_value": 200,
+    "new_value": 300
+  }
+]
+```
+
 ## Features
 
 - Compare JSON and YAML configuration files.
 - Detect added, removed, updated, and unchanged properties.
 - Compare nested objects recursively.
-- Display differences in `stylish` or `plain` format.
+- Display differences in `stylish`, `plain`, or `json` format.
 - Use Gendiff from the command line or as a Python library.
 
 ## Python library usage
@@ -117,9 +146,11 @@ To select a specific output format, pass it as the third argument:
 ```python
 from gendiff import generate_diff
 
-diff = generate_diff("file1.json", "file2.json", "plain")
+diff = generate_diff("file1.json", "file2.json", "json")
 print(diff)
 ```
+
+Supported format names are `stylish`, `plain`, and `json`.
 
 ## Development
 
@@ -158,6 +189,10 @@ make lint
 ### Plain output
 
 [![Plain output demonstration](https://asciinema.org/a/Fm1cUu0BW4D8Y9hp.svg)](https://asciinema.org/a/Fm1cUu0BW4D8Y9hp)
+
+### JSON output
+
+[![JSON output demonstration](https://asciinema.org/a/JaYHBENhqG1BnLE6.svg)](https://asciinema.org/a/JaYHBENhqG1BnLE6)
 
 ## License
 
