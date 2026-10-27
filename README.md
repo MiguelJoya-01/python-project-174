@@ -32,30 +32,104 @@ Compare two JSON files:
 uv run gendiff file1.json file2.json
 ```
 
-Compare two YAML files using either `.yml` or `.yaml` extensions:
+Compare two YAML files:
 
 ```bash
 uv run gendiff file1.yml file2.yml
 ```
 
+The utility also supports files with the `.yaml` extension.
+
+### Output format
+
+The default output format is `stylish`. You can specify it explicitly using `--format`:
+
 ```bash
-uv run gendiff file1.yaml file2.yaml
+uv run gendiff --format stylish file1.json file2.json
 ```
 
-Example output:
+## Features
 
-```text
+- Supports JSON, YAML, and YML configuration files.
+- Recursively compares nested dictionaries.
+- Detects added, removed, changed, and unchanged properties.
+- Displays differences using the `stylish` format.
+- Uses `stylish` as the default output format.
+- Supports the `--format` command-line option.
+- Separates difference calculation from output formatting.
+- Provides a reusable Python function.
+
+## Example
+
+Given two configuration files with nested structures, `gendiff` recursively compares their contents.
+
+**file1.json**
+
+```json
 {
-  - follow: false
-    host: hexlet.io
-  - proxy: 123.234.53.22
-  - timeout: 50
-  + timeout: 20
-  + verbose: true
+  "common": {
+    "setting1": "Value 1",
+    "setting2": 200,
+    "follow": false
+  },
+  "group1": {
+    "baz": "bas",
+    "foo": "bar"
+  }
 }
 ```
 
-You can also use the library from Python:
+**file2.json**
+
+```json
+{
+  "common": {
+    "setting1": "Value 1",
+    "setting2": 300,
+    "follow": true
+  },
+  "group1": {
+    "baz": "bars",
+    "foo": "bar"
+  }
+}
+```
+
+Run the comparison:
+
+```bash
+uv run gendiff file1.json file2.json
+```
+
+Output:
+
+```text
+{
+    common: {
+      - follow: false
+      + follow: true
+        setting1: Value 1
+      - setting2: 200
+      + setting2: 300
+    }
+    group1: {
+      - baz: bas
+      + baz: bars
+        foo: bar
+    }
+}
+```
+
+The output uses the following markers:
+
+- `+` indicates an added property or a new value.
+- `-` indicates a removed property or an old value.
+- No marker indicates an unchanged property.
+- Nested objects are displayed recursively.
+
+## Python Library
+
+You can use `generate_diff()` directly from Python:
 
 ```python
 from gendiff import generate_diff
@@ -64,26 +138,49 @@ diff = generate_diff("file1.json", "file2.json")
 print(diff)
 ```
 
-The `generate_diff()` function also supports YAML files.
+The output format can also be specified explicitly:
 
-## Features
+```python
+from gendiff import generate_diff
 
-- Compares JSON and YAML configuration files.
-- Supports `.yml` and `.yaml` extensions.
-- Displays added, removed, changed, and unchanged keys.
-- Sorts keys alphabetically.
-- Provides a reusable `generate_diff()` function.
+diff = generate_diff(
+    "file1.json",
+    "file2.json",
+    "stylish",
+)
+print(diff)
+```
+
+## Tests
+
+Run the test suite:
+
+```bash
+uv run pytest
+```
+
+Run tests with coverage:
+
+```bash
+make test-coverage
+```
+
+Run the linter:
+
+```bash
+make lint
+```
 
 ## Demo
 
 ### JSON comparison
 
-Watch the command-line utility in action:
-
-[![JSON demo](https://asciinema.org/a/NbjN7VAxX8bFp8RV.svg)](https://asciinema.org/a/NbjN7VAxX8bFp8RV)
+[![JSON comparison demo](https://asciinema.org/a/NbjN7VAxX8bFp8RV.svg)](https://asciinema.org/a/NbjN7VAxX8bFp8RV)
 
 ### YAML comparison
 
-Watch the command-line utility compare YAML files:
+[![YAML comparison demo](https://asciinema.org/a/8kDJNVZ4vCrR9NoD.svg)](https://asciinema.org/a/8kDJNVZ4vCrR9NoD)
 
-[![YAML demo](https://asciinema.org/a/8kDJNVZ4vCrR9NoD.svg)](https://asciinema.org/a/8kDJNVZ4vCrR9NoD)
+### Recursive comparison and stylish format
+
+[![Recursive comparison demo](https://asciinema.org/a/sSck2ZwHaGLt0rR9.svg)](https://asciinema.org/a/sSck2ZwHaGLt0rR9)

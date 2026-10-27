@@ -1,28 +1,15 @@
+from gendiff.formatters import stylish
 from gendiff.parsers import parse_file
+from gendiff.tree import build_diff
 
 
-def format_value(value):
-    if isinstance(value, bool):
-        return str(value).lower()
-    return str(value)
-
-
-def generate_diff(first_file, second_file):
+def generate_diff(first_file, second_file, format_name="stylish"):
     data1 = parse_file(first_file)
     data2 = parse_file(second_file)
 
-    lines = ["{"]
+    diff = build_diff(data1, data2)
 
-    for key in sorted(data1.keys() | data2.keys()):
-        if key not in data2:
-            lines.append(f"  - {key}: {format_value(data1[key])}")
-        elif key not in data1:
-            lines.append(f"  + {key}: {format_value(data2[key])}")
-        elif data1[key] == data2[key]:
-            lines.append(f"    {key}: {format_value(data1[key])}")
-        else:
-            lines.append(f"  - {key}: {format_value(data1[key])}")
-            lines.append(f"  + {key}: {format_value(data2[key])}")
+    if format_name == "stylish":
+        return stylish(diff)
 
-    lines.append("}")
-    return "\n".join(lines)
+    raise ValueError(f"Unsupported format: {format_name}")
