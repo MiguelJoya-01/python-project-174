@@ -2,7 +2,7 @@
 
 [![Python CI](https://github.com/MiguelJoya-01/python-project-174/actions/workflows/pyci.yml/badge.svg)](https://github.com/MiguelJoya-01/python-project-174/actions/workflows/pyci.yml)
 
-A command-line utility and Python library for comparing two configuration files.
+A command-line utility and Python library for comparing configuration files in JSON and YAML formats.
 
 ## Requirements
 
@@ -32,6 +32,16 @@ Compare two JSON files:
 uv run gendiff file1.json file2.json
 ```
 
+Compare two YAML files using either `.yml` or `.yaml` extensions:
+
+```bash
+uv run gendiff file1.yml file2.yml
+```
+
+```bash
+uv run gendiff file1.yaml file2.yaml
+```
+
 Example output:
 
 ```text
@@ -54,16 +64,26 @@ diff = generate_diff("file1.json", "file2.json")
 print(diff)
 ```
 
+The `generate_diff()` function also supports YAML files.
+
 ## Features
 
-- Compares JSON configuration files.
+- Compares JSON and YAML configuration files.
+- Supports `.yml` and `.yaml` extensions.
 - Displays added, removed, changed, and unchanged keys.
 - Sorts keys alphabetically.
 - Provides a reusable `generate_diff()` function.
 
 ## Demo
 
+### JSON comparison
+
 Watch the command-line utility in action:
 
-[![asciicast](https://asciinema.org/a/NbjN7VAxX8bFp8RV.svg)](https://asciinema.org/a/NbjN7VAxX8bFp8RV)
+[![JSON demo](https://asciinema.org/a/NbjN7VAxX8bFp8RV.svg)](https://asciinema.org/a/NbjN7VAxX8bFp8RV)
 
+### YAML comparison
+
+Watch the command-line utility compare YAML files:
+
+[![YAML demo](https://asciinema.org/a/8kDJNVZ4vCrR9NoD.svg)](https://asciinema.org/a/8kDJNVZ4vCrR9NoD)

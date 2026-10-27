@@ -1,9 +1,4 @@
-import json
-
-
-def read_file(file_path):
-    with open(file_path) as file:
-        return json.load(file)
+from gendiff.parsers import parse_file
 
 
 def format_value(value):
@@ -13,8 +8,8 @@ def format_value(value):
 
 
 def generate_diff(first_file, second_file):
-    data1 = read_file(first_file)
-    data2 = read_file(second_file)
+    data1 = parse_file(first_file)
+    data2 = parse_file(second_file)
 
     lines = ["{"]
 
